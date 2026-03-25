@@ -12,6 +12,7 @@ Go to https://openwebui.com/posts/mistral_ai_chat_completions_api_thinking_filte
 4. Copy & paste `mistral_think_filter.py` contents into the code block.
 5. Save
 
+If you have trouble enabling the filter function. Help can be found here https://docs.openwebui.com/
 
 # Known Problems
 Tasks do not function correctly with the Mistral reasoning models (title-, tag generation etc.). The fix for this is set the task model to a non-reasoning model.
