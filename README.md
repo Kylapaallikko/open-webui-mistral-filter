@@ -1,6 +1,11 @@
 # open-webui-mistral-filter
 This filter function exposes Mistral AI Chat Completions API reasoning in the response stream by wrapping thinking output in <think> tags. It can also append a configurable reminder to user messages at a chosen interval, helping reinforce system instructions during longer conversations. Useful for debugging, experimentation, and workflows where you want Mistral’s thinking phase to be visible in real time.
 
+# Changelog
+## Version 1.1 - 2025-04-30
+- Reduced instances where the first few characters might be missing from the response after the thinking process.
+- Code cleaning, refactoring, and performance optimizations.
+
 # Installation
 ## Automatic install
 Go to https://openwebui.com/posts/mistral_ai_chat_completions_api_thinking_filter_dea9d2fe
