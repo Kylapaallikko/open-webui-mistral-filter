@@ -81,7 +81,7 @@ class Filter:
                             output_text.append(f'<think>\n')
                         output_text.append(item["thinking"][0]["text"])
                     else:
-                        output_text.append(item["content"])
+                        output_text.append(item)
             else:
                 # "normal" response begin. Reset thinking status.
                 if event_id in self.ids:
