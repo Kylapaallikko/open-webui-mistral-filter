@@ -92,7 +92,7 @@ class Filter:
                             self.ids.remove(event_id)
 
                     elif item.get("type") == "text":
-                        output_text.append(item["text"])
+                        output_text.append(item.get("text", ""))
                         
             else:
                 # "normal" response begin. Reset thinking status.
