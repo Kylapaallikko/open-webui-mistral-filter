@@ -3,7 +3,7 @@ title: Mistral Chat Completions Thinking Exposure
 description: Filter exposes Mistral Chat Completions API reasoning in the response stream by wrapping thinking output in <think> tags. It can also append a configurable reminder to user messages at a chosen interval, helping reinforce system instructions during longer conversations.
 author: Kylapaallikko
 author_url: https://github.com/Kylapaallikko
-version: 1.1
+version: 1.2
 license: MIT
 """
 
@@ -60,34 +60,48 @@ class Filter:
         
         for choice in event.get("choices", []):
             delta = choice.get("delta", {})
+            output_text = []
             
             # Stops thinking on tool call
             if choice.get("finish_reason", None) == "tool_calls":
                 if event_id in self.ids:
-                    delta["content"] = "</think>\n"
+                    output_text.append("</think>")
                     self.ids.remove(event_id)
 
             # If no content present. Skip.
             if not delta.get("content", ""):
                 continue
             
-            output_text = []
+            content = delta["content"]
         
-            if isinstance(delta["content"], list):
-                for item in delta["content"]:
-                    if item["type"] == "thinking":
+            if isinstance(content, list):
+                for item in content:
+                    if item.get("type") == "thinking":                        
                         if not event_id in self.ids:
                             self.ids.append(event_id)
-                            output_text.append(f'<think>\n')
-                        output_text.append(item["thinking"][0]["text"])
-                    else:
-                        output_text.append(item)
+                            output_text.append(f'<think>')
+                        
+                        # Handle possible multiple thinking fragments.
+                        for thinking in item["thinking"]:
+                            if thinking.get("text"):
+                                output_text.append(thinking["text"])
+                        
+                        # Handle edge-case where response text comes along with the thinking content.
+                        if len(content) > 1:
+                            output_text.append("</think>")
+                            self.ids.remove(event_id)
+
+                    elif item.get("type") == "text":
+                        output_text.append(item["text"])
+                        
             else:
                 # "normal" response begin. Reset thinking status.
                 if event_id in self.ids:
-                    output_text.append(f'</think>\n{delta["content"]}')
+                    output_text.append("</think>")
                     self.ids.remove(event_id)
-            
+
+                output_text.append(content)
+
             if output_text:
                 delta["content"] = "".join(output_text)
                     
@@ -99,3 +113,4 @@ class Filter:
         # or perform additional checks and analytics.
         self.ids = [] # Reset id(s)
         return body
+
